@@ -22,9 +22,6 @@ Constructs a file tree for Flask with a server.py file parallel to the `flask_ap
 <h3>Output creating new project:</h3>
 ![image](https://user-images.githubusercontent.com/75331586/177205567-201293c7-ff16-4b6a-94ab-d86dc46361bd.png)
 
-<h3>Test output with existing project:</h3>
-![image](https://user-images.githubusercontent.com/75331586/177205816-734c2bd8-c43b-4412-b1bb-a449ba3c69c2.png)
-
 # Use an alias
 Example alias using git bash:
 `alias constructicon='winpty python C:/Path/To/FlaskConstructicon/FlaskConstructicon.py'`
