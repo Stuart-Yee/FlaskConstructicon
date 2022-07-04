@@ -15,3 +15,13 @@ Constructs a file tree for Flask with a server.py file parallel to the `flask_ap
 2) Run FlaskConstructicon.py
 `>> python path/to/FlaskConstructicon.py [system arguments]`
 3) FlaskConstructicon takes one system argument, `test` to see if the current directory doesn't already have the files and directories FlaskConstructicon will write
+
+# Use an alias
+Example alias using git bash:
+`alias constructicon='winpty python C:/Path/To/FlaskConstructicon/FlaskConstructicon.py'`
+
+# Next steps:
+-Externalise source files
+-Enhance arg parcer (db connection options)
+-Add source files for other db connections and/or APIs
+-publish package
