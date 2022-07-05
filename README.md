@@ -14,7 +14,50 @@ Constructs a file tree for Flask with a server.py file parallel to the `flask_ap
 1) Navigate to your new directory's project
 2) Run FlaskConstructicon.py
 `>> python path/to/FlaskConstructicon.py [system arguments]`
-3) FlaskConstructicon takes one system argument, `test` to see if the current directory doesn't already have the files and directories FlaskConstructicon will write
+3) FlaskConstructicon takes several arguments 
+
+<table>
+    <thead>
+        <tr>
+            <th>Argument</th>
+            <th>Options</th>
+            <th>Description</th>
+            <th>Examples</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>-md</td>
+            <td>test, help</td>
+            <td>Run mode, test or help</td>
+            <td>python FlaskConstructicon.py -md test</td>
+        </tr>
+        <tr>
+            <td>-a</td>
+            <td>Any</td>
+            <td>Specifies app name</td>
+            <td>python FlaskConstructicon.py -a my_app</td>
+        </tr>
+        <tr>
+            <td>-db</td>
+            <td>mysql</td>
+            <td>Add file for database API</td>
+            <td>python FlaskConstructicon.py -db mysql</td>
+        </tr>
+        <tr>
+            <td>test</td>
+            <td>N/A</td>
+            <td>Same as -md test (first argument only)</td>
+            <td>python FlaskConstructicon.py test</td>
+        </tr>
+        <tr>
+            <td>help</td>
+            <td>N/A</td>
+            <td>Same as -md help (first argument only)</td>
+            <td>python FlaskConstructicon.py help</td>
+        </tr>
+    </tbody>
+</table>
 
 <h3>Test output with app name 'simflario'</h3>
 
