@@ -61,15 +61,15 @@ Constructs a file tree for Flask with a server.py file parallel to the `flask_ap
 
 <h3>Test output with app name 'simflario'</h3>
 
-![image](https://user-images.githubusercontent.com/75331586/177205506-3f16de96-5529-4477-9389-3990d98a17e5.png)
+![image](https://user-images.githubusercontent.com/75331586/177251274-b439eb82-0787-4179-a4b2-ca8bf2b981f2.png)
 
 <h3>Output creating new project:</h3>
 
-![image](https://user-images.githubusercontent.com/75331586/177205567-201293c7-ff16-4b6a-94ab-d86dc46361bd.png)
+![image](https://user-images.githubusercontent.com/75331586/177251369-0f797d52-c371-4aba-a914-9762cc7c141a.png)
 
 <h3>Test output with existing project</h3>
 
-![image](https://user-images.githubusercontent.com/75331586/177206044-cb80e453-f0b1-41d8-bb93-112852821a57.png)
+![image](https://user-images.githubusercontent.com/75331586/177251447-4dcc19a0-05fa-4f92-ba1f-09563d31a280.png)
 
 
 # Use an alias
@@ -77,10 +77,13 @@ Example alias using git bash:
 `alias constructicon='winpty python C:/Path/To/FlaskConstructicon/FlaskConstructicon.py'`
 
 # Next steps:
->-Externalise source files
-
->-Enhance arg parcer (db connection options)
 
 >-Add source files for other db connections and/or APIs
 
 >-publish package
+
+>-create models files and models option
+
+>-create "Django Style" option
+
+>-create option `dbua` for user model and authentication based on db config
