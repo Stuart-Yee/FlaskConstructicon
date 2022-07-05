@@ -26,8 +26,6 @@ mode app_name db_option user_auth models
 def main(*args):
 
     arguments = _arg_handler(args)
-    print("arguments", args[0])
-    print("dictionary", arguments)
 
     if arguments.get("error"):
         print(COLOR["RED"], arguments.get("error"), COLOR["ENDC"])
@@ -49,24 +47,6 @@ def main(*args):
     elif arguments.get("mode") == "test":
         _test_mode(app_name)
         return
-
-
-    # handling system arguments... TODO partition in its own function
-    # for x in args:
-    #     # X is a list of args starting with the .py file
-    #     for y in x:
-    #         if y.lower() == "test":
-    #             if len(x) > 2:
-    #                 app_name = x[2]
-    #                 test_mode(app_name)
-    #             else:
-    #                 test_mode("flask_app")
-    #             return
-    #         elif len(x) > 1:
-    #             app_name = x[1]
-    #         else:
-    #             app_name = "flask_app"
-
 
     print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"])
 
@@ -103,13 +83,15 @@ def main(*args):
     module_file.close()
 
     #Going into the config directory to write the mysqlconnection.py file
-    os.chdir("config")
-    print(COLOR["GREEN"], "Creating", "config/mysqlconnection.py file", COLOR["ENDC"])
-    mysql = open("mysqlconnection.py", "w+")
-    #this .py file is responsible for connecting the app to the MySQL server
-    mysql.write(MYSQLCONNECTION)
-    mysql.close()
-    #finished
+    if arguments.get("database") == "mysql":
+        os.chdir("config")
+        print(COLOR["GREEN"], "Creating", "config/mysqlconnection.py file", COLOR["ENDC"])
+        mysql = open("mysqlconnection.py", "w+")
+        #this .py file is responsible for connecting the app to the MySQL server
+        mysql.write(MYSQLCONNECTION)
+        mysql.close()
+        #finished
+
     print(COLOR["BLUE"], "Directories and files for your Flask project successfully created", COLOR["ENDC"])
     return
 
@@ -139,6 +121,8 @@ def _arg_handler(*args):
                 arguments["app_name"] = sys_args[idx+1]
             elif arg == "-db":
                 arguments["database"] = sys_args[idx+1]
+                if arguments["database"] not in SUPPORTED_DATABASES:
+                    arguments["error"] = f"{arguments['database']} is not a supported database"
         except:
             arguments["error"] = "You may have entered invalid options:"
     if len(sys_args) > 1:

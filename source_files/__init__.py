@@ -2,6 +2,8 @@ from os import path, walk
 
 BASE = path.dirname(__file__)
 
+SUPPORTED_DATABASES = ("mysql")
+
 APP_MODULE_FILE = """
 from flask import Flask, session\n
 app = Flask(__name__)\n
