@@ -13,24 +13,59 @@ COLOR = {
     "ENDC": "\033[0m",
 }
 
+"""
+System Arguments
+mode app_name 
+mode: test
+app_name: any value
 
+Proposed:
+mode app_name db_option user_auth models 
+"""
 
 def main(*args):
+
+    arguments = _arg_handler(args)
+    print("arguments", args[0])
+    print("dictionary", arguments)
+
+    if arguments.get("error"):
+        print(COLOR["RED"], arguments.get("error"), COLOR["ENDC"])
+        cli = ""
+        for arg in args[0][1:]:
+            cli += arg + " "
+        print("ARGUMENTS:", cli)
+        print(COLOR["GREEN"], HELP, COLOR["ENDC"])
+        return
+
+    if arguments.get("app_name"):
+        app_name = arguments["app_name"]
+    else:
+        app_name = "flask_app"
+
+    if arguments.get("mode") == "help":
+        print(COLOR["GREEN"], HELP, COLOR["ENDC"])
+        return
+    elif arguments.get("mode") == "test":
+        _test_mode(app_name)
+        return
+
+
     # handling system arguments... TODO partition in its own function
-    for x in args:
-        # X is a list of args starting with the .py file
-        for y in x:
-            if y.lower() == "test":
-                if len(x) > 2:
-                    app_name = x[2]
-                    test_mode(app_name)
-                else:
-                    test_mode("flask_app")
-                return
-            elif len(x) > 1:
-                app_name = x[1]
-            else:
-                app_name = "flask_app"
+    # for x in args:
+    #     # X is a list of args starting with the .py file
+    #     for y in x:
+    #         if y.lower() == "test":
+    #             if len(x) > 2:
+    #                 app_name = x[2]
+    #                 test_mode(app_name)
+    #             else:
+    #                 test_mode("flask_app")
+    #             return
+    #         elif len(x) > 1:
+    #             app_name = x[1]
+    #         else:
+    #             app_name = "flask_app"
 
 
     print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"])
@@ -64,9 +99,7 @@ def main(*args):
     #writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
     module_file = open("__init__.py", "w+")
-    module_file.write(
-"from flask import Flask, session\napp = Flask(__name__)\napp.secret_key = \"YOUR SECRET KEY\"\n#TODO Change secret key"
-)
+    module_file.write(APP_MODULE_FILE)
     module_file.close()
 
     #Going into the config directory to write the mysqlconnection.py file
@@ -74,22 +107,48 @@ def main(*args):
     print(COLOR["GREEN"], "Creating", "config/mysqlconnection.py file", COLOR["ENDC"])
     mysql = open("mysqlconnection.py", "w+")
     #this .py file is responsible for connecting the app to the MySQL server
-    mysql.write(
-"# a cursor is the object we use to interact with the database\nimport pymysql.cursors\n# this class will give us an instance of a connection to our database\nclass MySQLConnection:\n\tdef __init__(self, db):\n\t\t# change the user and password as needed\n\t\tconnection = pymysql.connect(host='localhost', user='root', password='root', db=db, charset='utf8mb4', cursorclass=pymysql.cursors.DictCursor, autocommit=True)\n\t\t# establish the connection to the database\n\t\tself.connection = connection\n\t# the method to query the database\n\tdef query_db(self, query, data=None):\n\t\twith self.connection.cursor() as cursor:\n\t\t\ttry:\n\t\t\t\tquery = cursor.mogrify(query, data)\n\t\t\t\tprint(\"Running Query:\", query)\n\t\t\t\texecutable = cursor.execute(query, data)\n\t\t\t\tif query.lower().find(\"insert\") >= 0:\n\t\t\t\t\t# INSERT queries will return the ID NUMBER of the row inserted\n\t\t\t\t\tself.connection.commit()\n\t\t\t\t\treturn cursor.lastrowid\n\t\t\t\telif query.lower().find(\"select\") >= 0:\n\t\t\t\t\t# SELECT queries will return the data from the database as a LIST OF DICTIONARIES\n\t\t\t\t\tresult = cursor.fetchall()\n\t\t\t\t\treturn result\n\t\t\t\telse:\n\t\t\t\t\t# UPDATE and DELETE queries will return nothing\n\t\t\t\t\tself.connection.commit()\n\t\t\texcept Exception as e:\n\t\t\t\t# if the query fails the method will return FALSE\n\t\t\t\tprint(\"Something went wrong\", e)\n\t\t\t\treturn False\n\t\t\tfinally:\n\t\t\t\t# close the connection\n\t\t\t\tself.connection.close()\n\t\t\t\t# connectToMySQL receives the database we're using and uses it to create an instance of MySQLConnection\ndef connectToMySQL(db):\n\treturn MySQLConnection(db)")
+    mysql.write(MYSQLCONNECTION)
     mysql.close()
     #finished
     print(COLOR["BLUE"], "Directories and files for your Flask project successfully created", COLOR["ENDC"])
     return
 
-def help():
-    #TODO print help items
-    pass
+def _arg_handler(*args):
+    """
+    System Arguments
+    -md, mode --help, test
+    -a app_name --any
+    -db database --mysql
 
-def arg_handler(*args):
-    #TODO route argements
-    pass
+    Shortcuts (applies to first argument only):
+    test - enters test mode
+    help - enters help mode
 
-def test_mode(app_name):
+    Future options
+    -dbua user authentication, will build models and controllers for basic user authentication based on db
+    -models build model files and controllers from source_files/models
+    """
+
+    sys_args = args[0][0]
+    arguments ={}
+    for idx, arg in enumerate(sys_args):
+        try:
+            if str(arg) == "-md":
+                arguments["mode"] = sys_args[idx+1]
+            elif arg == "-a":
+                arguments["app_name"] = sys_args[idx+1]
+            elif arg == "-db":
+                arguments["database"] = sys_args[idx+1]
+        except:
+            arguments["error"] = "You may have entered invalid options:"
+    if len(sys_args) > 1:
+        if sys_args[1].lower() == "test":
+            arguments["mode"] = "test"
+        elif sys_args[1].lower() == "help":
+            arguments["mode"] = "help"
+    return arguments
+
+def _test_mode(app_name):
     #check file paths
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
     errors=[]
