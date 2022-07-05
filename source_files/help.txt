@@ -1,0 +1,10 @@
+    System Arguments
+    mode: -md (help, test)
+    app name: -a (any)
+    database: -db (mysql)
+
+    ex. python FlaskConstruction.py -md test -a my_app -db mysql
+
+    Shortcuts (applies to first argument only):
+    test - enters test mode
+    help - enters help mode
