@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import sys
-from source_files import *
+from resources import *
 
 os.system("color")
 
@@ -12,16 +12,6 @@ COLOR = {
     "RED": "\033[91m",
     "ENDC": "\033[0m",
 }
-
-"""
-System Arguments
-mode app_name 
-mode: test
-app_name: any value
-
-Proposed:
-mode app_name db_option user_auth models 
-"""
 
 def main(*args):
 
@@ -174,6 +164,3 @@ def _test_mode(app_name):
         print(COLOR["GREEN"], "\nNo errors, ready to construct app file tree", COLOR["ENDC"])
     print(COLOR["BLUE"], "\nTEST MODE. TERMINATING SESSION", COLOR["ENDC"])
     return
-
-if __name__=="__main__":
-    main(sys.argv)
