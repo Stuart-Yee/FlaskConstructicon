@@ -7,13 +7,13 @@ Constructs a file tree for Flask with a server.py file parallel to the `flask_ap
 
 ![image](https://user-images.githubusercontent.com/75331586/177196250-5b0ae026-6562-4c08-b999-96f47b3374c9.png)
 
-# Simple Install:
-1) Clone this Repository
+Installation:
+1) `pip install flaskconstructicon`
 
 # Simple Usage:
 1) Navigate to your new directory's project
-2) Run FlaskConstructicon.py
-`>> python path/to/FlaskConstructicon.py [system arguments]`
+2) Run FlaskConstructicon
+`>> python -m flaskconstructicon [system arguments]`
 3) FlaskConstructicon takes several arguments 
 
 <table>

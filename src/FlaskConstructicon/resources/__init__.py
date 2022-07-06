@@ -30,7 +30,7 @@ TEST_TEXT = _file_from_text("test.txt")
 
 HELP = _file_from_text("help.txt")
 
-MYSQLCONNECTION = _file_from_text("mysqlconnection.txt")
+MYSQLCONNECTION = _file_from_text("database_configs/mysqlconnection.txt")
 
 MODELS = []
 for (dirpath, dirname, fnames ) in walk(path.join(BASE, "models")):
