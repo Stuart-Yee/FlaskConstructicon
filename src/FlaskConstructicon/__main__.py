@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
-import sys
-from resources import *
+from sys import argv
+from .resources import *
 
 os.system("color")
 
@@ -68,7 +68,7 @@ def main(*args):
 
     #writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
-    module_file = open("__init__.py", "w+")
+    module_file = open("../__init__.py", "w+")
     module_file.write(APP_MODULE_FILE)
     module_file.close()
 
@@ -164,3 +164,6 @@ def _test_mode(app_name):
         print(COLOR["GREEN"], "\nNo errors, ready to construct app file tree", COLOR["ENDC"])
     print(COLOR["BLUE"], "\nTEST MODE. TERMINATING SESSION", COLOR["ENDC"])
     return
+
+if __name__=="__main__":
+    main(argv)

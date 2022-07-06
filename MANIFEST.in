@@ -1,0 +1,5 @@
+# MANIFEST.in
+
+include src/resources/*.txt
+include src/resources/database_configs/*.txt
+include src/resources/models/*txt
