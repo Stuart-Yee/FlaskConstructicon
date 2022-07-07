@@ -68,7 +68,7 @@ def main(*args):
 
     #writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
-    module_file = open("../__init__.py", "w+")
+    module_file = open("__init__.py", "w+")
     module_file.write(APP_MODULE_FILE)
     module_file.close()
 

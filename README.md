@@ -1,13 +1,13 @@
 # FlaskConstructicon
 ![image](https://user-images.githubusercontent.com/75331586/177195753-b57551ca-c7ab-4299-9b7d-8da8c0b321f5.png)
 
-Flask Project Builder
+<h3>Flask Project Builder</h3>
 
-Constructs a file tree for Flask with a server.py file parallel to the `flask_app` directory:
+Constructs a file tree for a Flask app using MVC design pattern (Models, Controllers and Templates as Views):
 
-![image](https://user-images.githubusercontent.com/75331586/177196250-5b0ae026-6562-4c08-b999-96f47b3374c9.png)
+![image](https://user-images.githubusercontent.com/75331586/177694189-daf043f2-c71c-4a71-91ce-00816d877532.png)
 
-Installation:
+# Installation:
 1) `pip install flaskconstructicon`
 
 # Simple Usage:
@@ -79,8 +79,6 @@ Example alias using git bash:
 # Next steps:
 
 >-Add source files for other db connections and/or APIs
-
->-publish package
 
 >-create models files and models option
 
