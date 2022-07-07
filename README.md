@@ -5,7 +5,7 @@
 
 Constructs a file tree for a Flask app using MVC design pattern (Models, Controllers and Templates as Views):
 
-![image](https://user-images.githubusercontent.com/75331586/177196250-5b0ae026-6562-4c08-b999-96f47b3374c9.png)
+![image](https://user-images.githubusercontent.com/75331586/177694189-daf043f2-c71c-4a71-91ce-00816d877532.png)
 
 # Installation:
 1) `pip install flaskconstructicon`
