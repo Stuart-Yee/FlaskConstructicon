@@ -80,8 +80,6 @@ Example alias using git bash:
 
 >-Add source files for other db connections and/or APIs
 
->-publish package
-
 >-create models files and models option
 
 >-create "Django Style" option
