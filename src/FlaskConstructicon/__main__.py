@@ -24,6 +24,7 @@ MVC_TREE = {
                     "directories": [
                         {"config": {"files": [], "directories": []}},
                         {"models": {"files": [], "directories": []}},
+                        {"controllers": {"files": [], "directories": []}},
                         {"static": {"files": [], "directories": []}},
                         {"templates": {"files": [], "directories": []}},
                         {"ext_apis": {"files": [], "directories": []}}
@@ -65,21 +66,31 @@ def main(*args):
 
 def _build_mvc_pattern(app_name, arguments):
     # Writing server.py file in current directory
-    print(COLOR["GREEN"], "Creating", "server.py file", COLOR["ENDC"])
-    server = open("server.py", "w+")
-    server.write(server_py(app_name))
-    server.close()
+    try:
+        print(COLOR["GREEN"], "Creating", "server.py file", COLOR["ENDC"])
+        server = open("server.py", "w+")
+        server.write(server_py(app_name))
+        server.close()
+    except Exception as e:
+        print(COLOR["RED"], str(e), COLOR["ENDC"])
 
     # creating the app folder and going into it
-    print(COLOR["GREEN"], "Creating", f"{app_name} folder", COLOR["ENDC"])
-    Path(app_name).mkdir()
-    os.chdir(app_name)
+    try:
+        print(COLOR["GREEN"], "Creating", f"{app_name} folder", COLOR["ENDC"])
+        Path(app_name).mkdir()
+    except Exception as e:
+        print(COLOR["RED"], str(e), COLOR["ENDC"])
+    finally:
+        os.chdir(app_name)
 
     # creating the folders inside the app folder accorindg to MVC design
     for directory in MVC_TREE["top"]["directories"][0]["app_name"]["directories"]:
-        for dir_name, value in directory.items():
-            print(COLOR["GREEN"], "Creating", f"{app_name}/{dir_name} directory", COLOR["ENDC"])
-            Path(dir_name).mkdir()
+        try:
+            for dir_name, value in directory.items():
+                print(COLOR["GREEN"], "Creating", f"{app_name}/{dir_name} directory", COLOR["ENDC"])
+                Path(dir_name).mkdir()
+        except Exception as e:
+            print(COLOR["RED"], str(e), COLOR["ENDC"])
 
     # writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
@@ -139,31 +150,31 @@ def _arg_handler(*args):
     return arguments
 
 
-def _test_mode(app_name, pattern):
+def _test_mode(app_name, pattern=None):
     # check file paths
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
     errors = []
-    # tree = {
-    #     app_name : ["config", "controllers", "models", "static", "templates", "__init__.py"],
-    #     "server.py": None
-    # }
-    # for top in tree.keys():
-    #     if(os.path.exists(os.path.join(os.getcwd(),top))):
-    #         this_error = COLOR["RED"]+top+" already exists"+COLOR["ENDC"]
-    #         errors.append(this_error)
-    #         print(this_error)
-    #     else:
-    #         print(COLOR["GREEN"], top, " doesn't exist", COLOR["ENDC"])
-    #     if tree[top]:
-    #         for sub in tree[top]:
-    #             sub_path = os.path.join(top, sub)
-    #             abs_path = os.path.join(os.getcwd(), sub_path)
-    #             if(os.path.exists(abs_path)):
-    #                 this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
-    #                 print(this_error)
-    #                 errors.append(this_error)
-    #             else:
-    #                 print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+    tree = {
+        app_name : ["config", "controllers", "models", "static", "templates", "__init__.py"],
+        "server.py": None
+    }
+    for top in tree.keys():
+        if(os.path.exists(os.path.join(os.getcwd(),top))):
+            this_error = COLOR["RED"]+top+" already exists"+COLOR["ENDC"]
+            errors.append(this_error)
+            print(this_error)
+        else:
+            print(COLOR["GREEN"], top, " doesn't exist", COLOR["ENDC"])
+        if tree[top]:
+            for sub in tree[top]:
+                sub_path = os.path.join(top, sub)
+                abs_path = os.path.join(os.getcwd(), sub_path)
+                if(os.path.exists(abs_path)):
+                    this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
+                    print(this_error)
+                    errors.append(this_error)
+                else:
+                    print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
 
     mysqlcon = os.path.join(app_name, "config", "mysqlconnection.py")
     if os.path.exists(os.path.join(os.getcwd(), mysqlcon)):
