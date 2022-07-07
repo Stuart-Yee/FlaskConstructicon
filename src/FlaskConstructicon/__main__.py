@@ -1,7 +1,8 @@
 from pathlib import Path
 import os
 from sys import argv
-from .resources import *
+from resources import *
+from pprint import pprint
 
 os.system("color")
 
@@ -13,8 +14,28 @@ COLOR = {
     "ENDC": "\033[0m",
 }
 
-def main(*args):
+MVC_TREE = {
+    "top": {
+        "files": ["server.py"],
+        "directories": [
+            {
+                "app_name": {
+                    "files": ["__init__.py"],
+                    "directories": [
+                        {"config": {"files": [], "directories": []}},
+                        {"models": {"files": [], "directories": []}},
+                        {"static": {"files": [], "directories": []}},
+                        {"templates": {"files": [], "directories": []}},
+                        {"ext_apis": {"files": [], "directories": []}}
+                    ]
+                }
+            }
+        ]
+    }
+}
 
+
+def main(*args):
     arguments = _arg_handler(args)
 
     if arguments.get("error"):
@@ -39,51 +60,46 @@ def main(*args):
         return
 
     print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"])
+    _build_mvc_pattern(app_name, arguments)
 
-    #Writing server.py file in current directory
+
+def _build_mvc_pattern(app_name, arguments):
+    # Writing server.py file in current directory
     print(COLOR["GREEN"], "Creating", "server.py file", COLOR["ENDC"])
     server = open("server.py", "w+")
     server.write(server_py(app_name))
     server.close()
 
-
-
-
-    #creating the app folder and going into it
+    # creating the app folder and going into it
     print(COLOR["GREEN"], "Creating", f"{app_name} folder", COLOR["ENDC"])
     Path(app_name).mkdir()
     os.chdir(app_name)
 
-    #creating the folders inside the app folder accorindg to MVC design
-    print(COLOR["GREEN"], "Creating", f"{app_name}/config directory", COLOR["ENDC"])
-    Path("config").mkdir()
-    print(COLOR["GREEN"], "Creating", f"{app_name}/controllers directory", COLOR["ENDC"])
-    Path("controllers").mkdir()
-    print(COLOR["GREEN"], "Creating", f"{app_name}/models directory", COLOR["ENDC"])
-    Path("models").mkdir()
-    print(COLOR["GREEN"], "Creating", f"{app_name}/static directory", COLOR["ENDC"])
-    Path("static").mkdir()
-    print(COLOR["GREEN"], "Creating", f"{app_name}/templates directory", COLOR["ENDC"])
-    Path("templates").mkdir()
+    # creating the folders inside the app folder accorindg to MVC design
+    for directory in MVC_TREE["top"]["directories"][0]["app_name"]["directories"]:
+        for dir_name, value in directory.items():
+            print(COLOR["GREEN"], "Creating", f"{app_name}/{dir_name} directory", COLOR["ENDC"])
+            Path(dir_name).mkdir()
 
-    #writing the __init__.py file for the module
+    # writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
     module_file = open("__init__.py", "w+")
     module_file.write(APP_MODULE_FILE)
     module_file.close()
 
-    #Going into the config directory to write the mysqlconnection.py file
+    # Going into the config directory to write the mysqlconnection.py file
     if arguments.get("database") == "mysql":
         os.chdir("config")
         print(COLOR["GREEN"], "Creating", "config/mysqlconnection.py file", COLOR["ENDC"])
         mysql = open("mysqlconnection.py", "w+")
-        #this .py file is responsible for connecting the app to the MySQL server
+        # this .py file is responsible for connecting the app to the MySQL server
         mysql.write(MYSQLCONNECTION)
         mysql.close()
-        #finished
+        # finished
 
     print(COLOR["BLUE"], "Directories and files for your Flask project successfully created", COLOR["ENDC"])
     return
+
 
 def _arg_handler(*args):
     """
@@ -102,15 +118,15 @@ def _arg_handler(*args):
     """
 
     sys_args = args[0][0]
-    arguments ={}
+    arguments = {}
     for idx, arg in enumerate(sys_args):
         try:
             if str(arg) == "-md":
-                arguments["mode"] = sys_args[idx+1]
+                arguments["mode"] = sys_args[idx + 1]
             elif arg == "-a":
-                arguments["app_name"] = sys_args[idx+1]
+                arguments["app_name"] = sys_args[idx + 1]
             elif arg == "-db":
-                arguments["database"] = sys_args[idx+1]
+                arguments["database"] = sys_args[idx + 1]
                 if arguments["database"] not in SUPPORTED_DATABASES:
                     arguments["error"] = f"{arguments['database']} is not a supported database"
         except:
@@ -122,35 +138,36 @@ def _arg_handler(*args):
             arguments["mode"] = "help"
     return arguments
 
-def _test_mode(app_name):
-    #check file paths
+
+def _test_mode(app_name, pattern):
+    # check file paths
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
-    errors=[]
-    tree = {
-        app_name : ["config", "controllers", "models", "static", "templates", "__init__.py"],
-        "server.py" : None
-    }
-    for top in tree.keys():
-        if(os.path.exists(os.path.join(os.getcwd(),top))):
-            this_error = COLOR["RED"]+top+" already exists"+COLOR["ENDC"]
-            errors.append(this_error)
-            print(this_error)
-        else:
-            print(COLOR["GREEN"], top, " doesn't exist", COLOR["ENDC"])
-        if tree[top]:
-            for sub in tree[top]:
-                sub_path = os.path.join(top, sub)
-                abs_path = os.path.join(os.getcwd(), sub_path)
-                if(os.path.exists(abs_path)):
-                    this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
-                    print(this_error)
-                    errors.append(this_error)
-                else:
-                    print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+    errors = []
+    # tree = {
+    #     app_name : ["config", "controllers", "models", "static", "templates", "__init__.py"],
+    #     "server.py": None
+    # }
+    # for top in tree.keys():
+    #     if(os.path.exists(os.path.join(os.getcwd(),top))):
+    #         this_error = COLOR["RED"]+top+" already exists"+COLOR["ENDC"]
+    #         errors.append(this_error)
+    #         print(this_error)
+    #     else:
+    #         print(COLOR["GREEN"], top, " doesn't exist", COLOR["ENDC"])
+    #     if tree[top]:
+    #         for sub in tree[top]:
+    #             sub_path = os.path.join(top, sub)
+    #             abs_path = os.path.join(os.getcwd(), sub_path)
+    #             if(os.path.exists(abs_path)):
+    #                 this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
+    #                 print(this_error)
+    #                 errors.append(this_error)
+    #             else:
+    #                 print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
 
     mysqlcon = os.path.join(app_name, "config", "mysqlconnection.py")
     if os.path.exists(os.path.join(os.getcwd(), mysqlcon)):
-        this_error = COLOR["RED"]+mysqlcon +" already exists"+COLOR["ENDC"]
+        this_error = COLOR["RED"] + mysqlcon + " already exists" + COLOR["ENDC"]
         errors.append(this_error)
         print(this_error)
     else:
@@ -165,5 +182,6 @@ def _test_mode(app_name):
     print(COLOR["BLUE"], "\nTEST MODE. TERMINATING SESSION", COLOR["ENDC"])
     return
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main(argv)
