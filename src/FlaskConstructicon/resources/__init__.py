@@ -14,11 +14,11 @@ app.secret_key = \"YOUR SECRET KEY\"\n
 # Build server.py based on app name
 def server_py(app_name="flask_app"):
     return f"""
-    from {app_name}.controllers import #TODO controllers go here\n
-    from {app_name} import app\n
-    if __name__==\"__main__\":\n
-    \tapp.run(debug=True)
-    """
+from {app_name}.controllers import #TODO controllers go here\n
+from {app_name} import app\n
+if __name__==\"__main__\":\n
+\tapp.run(debug=True)
+"""
 
 # File builder from .txt
 def _file_from_text(file_name):

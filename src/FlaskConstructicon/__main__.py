@@ -15,7 +15,6 @@ COLOR = {
 }
 
 MVC_TREE = {
-    "top": {
         "files": ["server.py"],
         "directories": [
             {
@@ -33,7 +32,6 @@ MVC_TREE = {
             }
         ]
     }
-}
 
 
 def main(*args):
@@ -57,7 +55,7 @@ def main(*args):
         print(COLOR["GREEN"], HELP, COLOR["ENDC"])
         return
     elif arguments.get("mode") == "test":
-        _test_mode(app_name)
+        _test_mode(app_name, MVC_TREE, os.getcwd())
         return
 
     print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"])
@@ -150,7 +148,7 @@ def _arg_handler(*args):
     return arguments
 
 
-def _test_mode(app_name, pattern=None):
+def _test_mode(app_name, pattern, current_path):
     # check file paths
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
     errors = []
@@ -183,6 +181,25 @@ def _test_mode(app_name, pattern=None):
         print(this_error)
     else:
         print(COLOR["GREEN"], mysqlcon, " doesn't exist", COLOR["ENDC"])
+
+    # new loops to support any provided pattern
+    def _inner_loop(app_name, pattern, current_path):
+        for file in pattern["files"]:
+            print(os.path.join(current_path, file))
+        for directory in pattern["directories"]:
+            for dir_name in directory.keys():
+                old_key = dir_name
+                if dir_name == "app_name":
+                    dir_name = app_name
+                new_path = os.path.join(current_path, dir_name)
+                print(new_path)
+                #todo insert if/else logic and print if file path exists
+                _inner_loop(app_name, directory[old_key], new_path)
+
+    #todo enable as soon as _inner_loop() is complete
+
+    # _inner_loop(app_name, pattern, current_path)
+
 
     if len(errors) > 0:
         print("\n", COLOR["RED"], len(errors), " error(s):")
