@@ -21,7 +21,7 @@ MVC_TREE = {
                 "app_name": {
                     "files": ["__init__.py"],
                     "directories": [
-                        {"config": {"files": [], "directories": []}},
+                        {"config": {"files": ["mysqlconnection.py"], "directories": []}},
                         {"models": {"files": [], "directories": []}},
                         {"controllers": {"files": [], "directories": []}},
                         {"static": {"files": [], "directories": []}},
@@ -147,59 +147,40 @@ def _arg_handler(*args):
             arguments["mode"] = "help"
     return arguments
 
+# new loops to support any provided pattern
+def _inner_loop(app_name, pattern, current_path):
+    errors = []
+    curr_dir = str(os.getcwd())
+    for file in pattern["files"]:
+        abs_path = os.path.join(current_path, file)
+        sub_path = str(abs_path).replace(curr_dir, ".")
+        if (os.path.exists(abs_path)):
+            this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
+            print(this_error)
+            errors.append(this_error)
+        else:
+            print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+    for directory in pattern["directories"]:
+        for dir_name in directory.keys():
+            old_key = dir_name
+            if dir_name == "app_name":
+                dir_name = app_name
+            abs_path = os.path.join(current_path, dir_name)
+            sub_path = str(abs_path.replace(curr_dir, "."))
+            if(os.path.exists(abs_path)):
+                this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
+                print(this_error)
+                errors.append(this_error)
+            else:
+                print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+            errors += _inner_loop(app_name, directory[old_key], abs_path)
+    return errors
+
 
 def _test_mode(app_name, pattern, current_path):
-    # check file paths
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
-    errors = []
-    tree = {
-        app_name : ["config", "controllers", "models", "static", "templates", "__init__.py"],
-        "server.py": None
-    }
-    for top in tree.keys():
-        if(os.path.exists(os.path.join(os.getcwd(),top))):
-            this_error = COLOR["RED"]+top+" already exists"+COLOR["ENDC"]
-            errors.append(this_error)
-            print(this_error)
-        else:
-            print(COLOR["GREEN"], top, " doesn't exist", COLOR["ENDC"])
-        if tree[top]:
-            for sub in tree[top]:
-                sub_path = os.path.join(top, sub)
-                abs_path = os.path.join(os.getcwd(), sub_path)
-                if(os.path.exists(abs_path)):
-                    this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
-                    print(this_error)
-                    errors.append(this_error)
-                else:
-                    print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
 
-    mysqlcon = os.path.join(app_name, "config", "mysqlconnection.py")
-    if os.path.exists(os.path.join(os.getcwd(), mysqlcon)):
-        this_error = COLOR["RED"] + mysqlcon + " already exists" + COLOR["ENDC"]
-        errors.append(this_error)
-        print(this_error)
-    else:
-        print(COLOR["GREEN"], mysqlcon, " doesn't exist", COLOR["ENDC"])
-
-    # new loops to support any provided pattern
-    def _inner_loop(app_name, pattern, current_path):
-        for file in pattern["files"]:
-            print(os.path.join(current_path, file))
-        for directory in pattern["directories"]:
-            for dir_name in directory.keys():
-                old_key = dir_name
-                if dir_name == "app_name":
-                    dir_name = app_name
-                new_path = os.path.join(current_path, dir_name)
-                print(new_path)
-                #todo insert if/else logic and print if file path exists
-                _inner_loop(app_name, directory[old_key], new_path)
-
-    #todo enable as soon as _inner_loop() is complete
-
-    # _inner_loop(app_name, pattern, current_path)
-
+    errors = _inner_loop(app_name, pattern, current_path)
 
     if len(errors) > 0:
         print("\n", COLOR["RED"], len(errors), " error(s):")
