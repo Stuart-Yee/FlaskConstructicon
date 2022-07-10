@@ -34,13 +34,13 @@ MVC_TREE = {
     }
 
 
-def main(*args):
+def main(args):
     arguments = _arg_handler(args)
 
     if arguments.get("error"):
         print(COLOR["RED"], arguments.get("error"), COLOR["ENDC"])
         cli = ""
-        for arg in args[0][1:]:
+        for arg in args[1:]:
             cli += arg + " "
         print("ARGUMENTS:", cli)
         print(COLOR["GREEN"], HELP, COLOR["ENDC"])
@@ -110,7 +110,7 @@ def _build_mvc_pattern(app_name, arguments):
     return
 
 
-def _arg_handler(*args):
+def _arg_handler(args):
     """
     System Arguments
     -md, mode --help, test
@@ -126,9 +126,10 @@ def _arg_handler(*args):
     -models build model files and controllers from source_files/models
     """
 
-    sys_args = args[0][0]
+    sys_args = args
     arguments = {}
     for idx, arg in enumerate(sys_args):
+        print(idx, arg)
         try:
             if str(arg) == "-md":
                 arguments["mode"] = sys_args[idx + 1]
