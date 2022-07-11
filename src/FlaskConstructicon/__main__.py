@@ -16,6 +16,20 @@ COLOR = {
     "ENDC": "\033[0m",
 }
 
+"""
+File pattern is a JSON with sets keys "files" and "directories".
+The value for "files" is a dictionary with the filename as the key
+and the value serving as a key for the VAULT in the resources __init__.py
+
+"directories" is recursive having a key being the directory name and its
+value being a recursive nesting of more "files" and "directories"
+
+As of 7/10/2022 only one pattern is supported based on the design pattern
+taught at Coding Dojo.
+
+Future design patterns will be added and stored in resources as a .JSON
+"""
+
 MVC_TREE = {
     "files": {"server.py": "server.py"},
     "directories": {
