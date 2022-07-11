@@ -6,6 +6,8 @@ from pprint import pprint
 
 os.system("color")
 
+app_name = "smelly"
+
 COLOR = {
     "HEADER": "\033[95m",
     "BLUE": "\033[94m",
@@ -15,23 +17,24 @@ COLOR = {
 }
 
 MVC_TREE = {
-        "files": ["server.py"],
-        "directories": [
-            {
-                "app_name": {
-                    "files": ["__init__.py"],
-                    "directories": [
-                        {"config": {"files": ["mysqlconnection.py"], "directories": []}},
-                        {"models": {"files": [], "directories": []}},
-                        {"controllers": {"files": [], "directories": []}},
-                        {"static": {"files": [], "directories": []}},
-                        {"templates": {"files": [], "directories": []}},
-                        {"ext_apis": {"files": [], "directories": []}}
-                    ]
-                }
+    "files": {"server.py": "server.py"},
+    "directories": {
+            "app_name": {
+                "files": {"__init__.py": "app_module_file"},
+                "directories": {
+                    "config": {
+                        "files": {"mysqlconnection.py": "mysqlconnection"},
+                        "directories": None
+                    },
+                    "models": {"files": None, "directories": None},
+                    "controllers": {"files": None, "directories": None},
+                    "static": {"files": None, "directories": None},
+                    "templates": {"files": None, "directories": None},
+                    "ext_apis": {"files": None, "directories": None}
             }
-        ]
+        }
     }
+}
 
 
 def main(args):
@@ -67,6 +70,7 @@ def _build_mvc_pattern(app_name, arguments):
     try:
         print(COLOR["GREEN"], "Creating", "server.py file", COLOR["ENDC"])
         server = open("server.py", "w+")
+        print(MVC_TREE["files"][0][1])
         server.write(server_py(app_name))
         server.close()
     except Exception as e:
@@ -82,7 +86,7 @@ def _build_mvc_pattern(app_name, arguments):
         os.chdir(app_name)
 
     # creating the folders inside the app folder accorindg to MVC design
-    for directory in MVC_TREE["top"]["directories"][0]["app_name"]["directories"]:
+    for directory in MVC_TREE["directories"][0]["app_name"]["directories"]:
         try:
             for dir_name, value in directory.items():
                 print(COLOR["GREEN"], "Creating", f"{app_name}/{dir_name} directory", COLOR["ENDC"])
@@ -93,7 +97,7 @@ def _build_mvc_pattern(app_name, arguments):
     # writing the __init__.py file for the module
     print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
     module_file = open("__init__.py", "w+")
-    module_file.write(APP_MODULE_FILE)
+    module_file.write(VAULT.get("APP_MODULE_FILE"))
     module_file.close()
 
     # Going into the config directory to write the mysqlconnection.py file
@@ -126,55 +130,55 @@ def _arg_handler(args):
     -models build model files and controllers from source_files/models
     """
 
-    sys_args = args
     arguments = {}
-    for idx, arg in enumerate(sys_args):
-        print(idx, arg)
+    for idx, arg in enumerate(args):
         try:
             if str(arg) == "-md":
-                arguments["mode"] = sys_args[idx + 1]
+                arguments["mode"] = args[idx + 1]
             elif arg == "-a":
-                arguments["app_name"] = sys_args[idx + 1]
+                arguments["app_name"] = args[idx + 1]
             elif arg == "-db":
-                arguments["database"] = sys_args[idx + 1]
+                arguments["database"] = args[idx + 1]
                 if arguments["database"] not in SUPPORTED_DATABASES:
                     arguments["error"] = f"{arguments['database']} is not a supported database"
         except:
             arguments["error"] = "You may have entered invalid options:"
-    if len(sys_args) > 1:
-        if sys_args[1].lower() == "test":
+    if len(args) > 1:
+        if args[1].lower() == "test":
             arguments["mode"] = "test"
-        elif sys_args[1].lower() == "help":
+        elif args[1].lower() == "help":
             arguments["mode"] = "help"
     return arguments
+
 
 # new loops to support any provided pattern
 def _inner_loop(app_name, pattern, current_path):
     errors = []
     curr_dir = str(os.getcwd())
-    for file in pattern["files"]:
-        abs_path = os.path.join(current_path, file)
-        sub_path = str(abs_path).replace(curr_dir, ".")
-        if (os.path.exists(abs_path)):
-            this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
-            print(this_error)
-            errors.append(this_error)
-        else:
-            print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
-    for directory in pattern["directories"]:
-        for dir_name in directory.keys():
+    if pattern["files"]:
+        for file in pattern["files"]:
+            abs_path = os.path.join(current_path, file)
+            sub_path = str(abs_path).replace(curr_dir, ".")
+            if os.path.exists(abs_path):
+                this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
+                print(this_error)
+                errors.append(this_error)
+            else:
+                print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+    if pattern["directories"]:
+        for dir_name in pattern["directories"]:
             old_key = dir_name
             if dir_name == "app_name":
                 dir_name = app_name
             abs_path = os.path.join(current_path, dir_name)
             sub_path = str(abs_path.replace(curr_dir, "."))
-            if(os.path.exists(abs_path)):
-                this_error = COLOR["RED"]+sub_path+" already exists"+COLOR["ENDC"]
+            if os.path.exists(abs_path):
+                this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
                 print(this_error)
                 errors.append(this_error)
             else:
                 print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
-            errors += _inner_loop(app_name, directory[old_key], abs_path)
+            errors += _inner_loop(app_name, pattern["directories"][old_key], abs_path)
     return errors
 
 
