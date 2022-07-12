@@ -30,27 +30,6 @@ taught at Coding Dojo.
 Future design patterns will be added and stored in resources as a .JSON
 """
 
-MVC_TREE = {
-    "files": {"server.py": "server.py"},
-    "directories": {
-            "app_name": {
-                "files": {"__init__.py": "app_module_file"},
-                "directories": {
-                    "config": {
-                        "files": {"mysqlconnection.py": "mysqlconnection"},
-                        "directories": None
-                    },
-                    "models": {"files": None, "directories": None},
-                    "controllers": {"files": None, "directories": None},
-                    "static": {"files": None, "directories": None},
-                    "templates": {"files": None, "directories": None},
-                    "ext_apis": {"files": None, "directories": None}
-            }
-        }
-    }
-}
-
-
 def main(args):
     arguments = _arg_handler(args)
 
@@ -72,61 +51,16 @@ def main(args):
         print(COLOR["GREEN"], HELP, COLOR["ENDC"])
         return
     elif arguments.get("mode") == "test":
-        _test_mode(app_name, MVC_TREE, os.getcwd())
+        _test_mode(app_name, CD_MVC, os.getcwd(), arguments)
         return
 
-    print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"])
-    _build_mvc_pattern(app_name, arguments)
-
-
-def _build_mvc_pattern(app_name, arguments):
-    # Writing server.py file in current directory
-    try:
-        print(COLOR["GREEN"], "Creating", "server.py file", COLOR["ENDC"])
-        server = open("server.py", "w+")
-        print(MVC_TREE["files"][0][1])
-        server.write(server_py(app_name))
-        server.close()
-    except Exception as e:
-        print(COLOR["RED"], str(e), COLOR["ENDC"])
-
-    # creating the app folder and going into it
-    try:
-        print(COLOR["GREEN"], "Creating", f"{app_name} folder", COLOR["ENDC"])
-        Path(app_name).mkdir()
-    except Exception as e:
-        print(COLOR["RED"], str(e), COLOR["ENDC"])
-    finally:
-        os.chdir(app_name)
-
-    # creating the folders inside the app folder accorindg to MVC design
-    for directory in MVC_TREE["directories"][0]["app_name"]["directories"]:
-        try:
-            for dir_name, value in directory.items():
-                print(COLOR["GREEN"], "Creating", f"{app_name}/{dir_name} directory", COLOR["ENDC"])
-                Path(dir_name).mkdir()
-        except Exception as e:
-            print(COLOR["RED"], str(e), COLOR["ENDC"])
-
-    # writing the __init__.py file for the module
-    print(COLOR["GREEN"], "Creating", "__init__.py file", COLOR["ENDC"])
-    module_file = open("__init__.py", "w+")
-    module_file.write(VAULT.get("APP_MODULE_FILE"))
-    module_file.close()
-
-    # Going into the config directory to write the mysqlconnection.py file
-    if arguments.get("database") == "mysql":
-        os.chdir("config")
-        print(COLOR["GREEN"], "Creating", "config/mysqlconnection.py file", COLOR["ENDC"])
-        mysql = open("mysqlconnection.py", "w+")
-        # this .py file is responsible for connecting the app to the MySQL server
-        mysql.write(MYSQLCONNECTION)
-        mysql.close()
-        # finished
-
-    print(COLOR["BLUE"], "Directories and files for your Flask project successfully created", COLOR["ENDC"])
-    return
-
+    print(COLOR["BLUE"], "Current working directory:", Path.cwd(), COLOR["ENDC"], "\n")
+    errors = _inner_loop(app_name, CD_MVC, os.getcwd(), arguments, test=False)
+    if len(errors) > 0:
+        for error in errors:
+            print(COLOR["RED"], error, COLOR["ENDC"])
+    else:
+        print("\n", COLOR["BLUE"], "Directories and files for your Flask project successfully created", COLOR["ENDC"])
 
 def _arg_handler(args):
     """
@@ -166,19 +100,28 @@ def _arg_handler(args):
 
 
 # new loops to support any provided pattern
-def _inner_loop(app_name, pattern, current_path):
+def _inner_loop(app_name, pattern, current_path, arguments, test=True):
     errors = []
     curr_dir = str(os.getcwd())
+    db = arguments.get("database")
     if pattern["files"]:
-        for file in pattern["files"]:
-            abs_path = os.path.join(current_path, file)
-            sub_path = str(abs_path).replace(curr_dir, ".")
-            if os.path.exists(abs_path):
-                this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
-                print(this_error)
-                errors.append(this_error)
-            else:
-                print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+        for file, contents in pattern["files"].items():
+            if (db == contents and contents in SUPPORTED_DATABASES) or contents not in SUPPORTED_DATABASES:
+                abs_path = os.path.join(current_path, file)
+                sub_path = str(abs_path).replace(curr_dir, ".")
+                if os.path.exists(abs_path):
+                    this_error = COLOR["RED"] + sub_path + " already exists" + COLOR["ENDC"]
+                    print(this_error)
+                    errors.append(this_error)
+                else:
+                    print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
+                    if not test:
+                        print(COLOR["HEADER"], "Creating", sub_path, COLOR["ENDC"])
+                        with open(abs_path, "w+") as new_file:
+                            if file == "server.py":
+                                new_file.write(server_py(app_name))
+                            elif contents != "empty":
+                                new_file.write(VAULT[contents])
     if pattern["directories"]:
         for dir_name in pattern["directories"]:
             old_key = dir_name
@@ -192,14 +135,18 @@ def _inner_loop(app_name, pattern, current_path):
                 errors.append(this_error)
             else:
                 print(COLOR["GREEN"], sub_path, " doesn't exist", COLOR["ENDC"])
-            errors += _inner_loop(app_name, pattern["directories"][old_key], abs_path)
+                if not test:
+                    os.mkdir(abs_path)
+                    print(COLOR["HEADER"], "Creating", f"{sub_path} directory", COLOR["ENDC"])
+
+            errors += _inner_loop(app_name, pattern["directories"][old_key], abs_path, arguments, test=test)
     return errors
 
 
-def _test_mode(app_name, pattern, current_path):
+def _test_mode(app_name, pattern, current_path, arguments):
     print(COLOR["BLUE"], "TESTMODE:\nCurrent working directory:", Path.cwd(), COLOR["ENDC"], "\n")
 
-    errors = _inner_loop(app_name, pattern, current_path)
+    errors = _inner_loop(app_name, pattern, current_path, arguments)
 
     if len(errors) > 0:
         print("\n", COLOR["RED"], len(errors), " error(s):")

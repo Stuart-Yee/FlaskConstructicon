@@ -8,7 +8,8 @@
                 "directories": {
                     "config": {
                         "files": {
-                            "mysqlconnection.py": "mysqlconnection"
+                            "mysqlconnection.py": "mysql",
+                            "settings.py": "empty"
                         },
                         "directories": null
                     },

@@ -1,4 +1,5 @@
 from os import path, walk
+import json
 
 BASE = path.dirname(__file__)
 
@@ -13,7 +14,6 @@ app.secret_key = \"YOUR SECRET KEY\"\n
 
 # Build server.py based on app name
 def server_py(app_name="flask_app"):
-    print("running from __init__")
     return f"""
 from {app_name}.controllers import #TODO controllers go here\n
 from {app_name} import app\n
@@ -31,7 +31,10 @@ TEST_TEXT = _file_from_text("test.txt")
 
 HELP = _file_from_text("help.txt")
 
+CD_MVC = json.loads(_file_from_text("patterns/CD_MVC.json"))
+
 MYSQLCONNECTION = _file_from_text("database_configs/mysqlconnection.txt")
+
 
 MODELS = []
 for (dirpath, dirname, fnames ) in walk(path.join(BASE, "models")):
@@ -39,5 +42,5 @@ for (dirpath, dirname, fnames ) in walk(path.join(BASE, "models")):
 
 VAULT = {
     "app_module_file": APP_MODULE_FILE,
-    "mysqlconnection": MYSQLCONNECTION,
+    "mysql": MYSQLCONNECTION,
 }
