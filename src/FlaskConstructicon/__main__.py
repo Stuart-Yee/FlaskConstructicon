@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from sys import argv
-from resources import *
+from .resources import *
 from pprint import pprint
 
 os.system("color")
