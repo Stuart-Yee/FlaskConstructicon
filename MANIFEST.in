@@ -3,3 +3,4 @@
 include src/resources/*.txt
 include src/resources/database_configs/*.txt
 include src/resources/models/*txt
+include src/resources/patterns/*json

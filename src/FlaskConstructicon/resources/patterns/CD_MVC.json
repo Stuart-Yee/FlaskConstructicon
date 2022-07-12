@@ -1,0 +1,39 @@
+{
+    "files": {"server.py": "server.py"},
+    "directories": {
+            "app_name": {
+                "files": {
+                    "__init__.py": "app_module_file"
+                },
+                "directories": {
+                    "config": {
+                        "files": {
+                            "mysqlconnection.py": "mysql",
+                            "settings.py": "empty"
+                        },
+                        "directories": null
+                    },
+                    "models": {
+                        "files": null,
+                        "directories": null
+                    },
+                    "controllers": {
+                        "files": null,
+                        "directories": null
+                    },
+                    "static": {
+                        "files": null,
+                        "directories": null
+                    },
+                    "templates": {
+                        "files": null,
+                        "directories": null
+                    },
+                    "ext_apis": {
+                        "files": null,
+                        "directories": null
+                    }
+            }
+        }
+    }
+}
